@@ -4,8 +4,8 @@
 using namespace std;
 
 struct pacient{
-    int number;
-    int code;
+    char* number=new char[20];
+    char* code=new char[20];
     char* sName=new char[20];
 };
 
@@ -16,26 +16,16 @@ void formatPrint(pacient n){
 void createFile(string fileName){
     ofstream fileOut;
     pacient n;
-    n.code=000;
-    n.number=000;
+    n.code="000";
+    n.number="000";
     n.sName="Test";
     fileOut.open(fileName, ios::out | ios::binary);
     fileOut.write((char*)&n, sizeof( pacient));
-    n.code=1;
+    n.code="001";
     fileOut.write((char*)&n, sizeof( pacient));
-    n.code=2;
+    n.code="002";
     fileOut.write((char*)&n, sizeof( pacient));
     fileOut.close();
-}
-
-void printInFile(pacient n, string name) {
-    ofstream out(name, ios::out | ios::binary);
-    if (!out) {
-        cout << "Не удаётся открыть файл";
-        return;
-    }
-    out.write((char*)&n, sizeof( pacient));
-    out.close();
 }
 
 void printFromFile(string name) {
@@ -49,7 +39,6 @@ void printFromFile(string name) {
         in.read((char*)&n, sizeof( pacient));
         formatPrint(n);
     }
-
     in.close();
 }
 
