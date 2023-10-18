@@ -1,60 +1,188 @@
 #include <iostream>
 #include <fstream>
-
+#include <string>
+#include <vector>
+#include <cstring>
 using namespace std;
 
-struct pacient{
-    char* number=new char[20];
-    char* code=new char[20];
-    char* sName=new char[20];
+struct Struct{
+    int num;
+    int code;
+    char name[30];
 };
 
-void formatPrint(pacient n){
-    cout << n.number << " " << n.code << " " << n.sName << endl;
-}
-
-void createFile(string fileName){
-    ofstream fileOut;
-    pacient n;
-    n.code="000";
-    n.number="000";
-    n.sName="Test";
-    fileOut.open(fileName, ios::out | ios::binary);
-    fileOut.write((char*)&n, sizeof( pacient));
-    n.code="001";
-    fileOut.write((char*)&n, sizeof( pacient));
-    n.code="002";
-    fileOut.write((char*)&n, sizeof( pacient));
-    fileOut.close();
-}
-
-void printFromFile(string name) {
-    pacient n;
-    ifstream in(name, ios::in | ios::binary);
-    if (!in) {
-        cout << "Не удается открыть файл";
-        return;
+void createBinFile(ifstream &ft, ofstream &fb){
+    fb.open("bin.dat",ios::out | ios::binary);
+    ft.open("text.txt",ios::in);
+    Struct x;
+    while (!ft.eof()){
+        ft>>x.num;
+        ft.get();
+        ft>>x.code;
+        ft.get();
+        ft>>x.name;
+        ft.get();
+        fb.write((char *)&x,sizeof(Struct));
     }
-    while(!in.eof()) {
-        in.read((char*)&n, sizeof( pacient));
-        formatPrint(n);
-    }
-    in.close();
+    fb.close();
+    ft.close();
 }
 
-void fromBinToText(string from, string to) {
-    ofstream fileOut;
-    fileOut.open(to, ios::out | ios::trunc);
-    ifstream fileIn;
-    fileIn.open(from, ios::in | ios::binary);
-    pacient n;
-    fileIn.read((char*)&n, sizeof( pacient));
-    fileOut.write((char*)&n, sizeof( pacient));
-    fileIn.close();
-    fileOut.close();
+void outBinFile(ifstream &fb,string fName){
+    fb.open(fName,ios::in | ios::binary);
+    Struct x;
+    fb.read((char *)&x,sizeof(Struct));
+    while(!fb.eof()){
+        cout<<x.num<<" ";
+        cout<<x.code<<" ";
+        cout<<x.name<<" ";
+        fb.read((char *)&x,sizeof(Struct));
+    }
+    cout << endl;
+    fb.close();
+}
+
+void existIndex(ifstream &fb,int j) {
+    Struct x;
+    int i=1;
+    fb.open("bin.dat",ios::in | ios::binary);
+    while(!fb.eof()){
+        fb.read((char *)&x , sizeof(Struct));
+
+        if(j==i){
+            cout << "Запись "<<j<<"  " <<x.num << " " << x.code << " " << x.name;
+            fb.close();
+            return;
+        }
+        i++;
+    };
+    fb.close();
+    cout<<"Записи с номером "<< i<<" нет!"<<endl;
+}
+
+void saveTxt(ifstream &ft, ofstream &ft2){
+    ft.open("bin.dat",ios::in | ios::binary);
+    ft2.open("saveFile.txt",ios::out | ios::trunc);
+    Struct x;
+    while(!ft.eof()){
+        ft.read((char *)&x , sizeof(Struct));
+        ft2<<x.num <<endl<< x.code<<endl<< x.name << endl;
+    }
+    ft.close();
+    ft2.close();
+}
+
+void deleteFromBin(string sName){
+    fstream file;
+    file.open("bin.dat",  ios::in | ios::binary);
+    if(!file.is_open()){cout<<"Ошибка чтения файла";return;}
+
+    Struct currentStruct;
+    vector<Struct> records;
+    while(!file.eof()) {
+        file.read(reinterpret_cast<char*>(&currentStruct), sizeof(Struct));
+        records.push_back(currentStruct);
+    }
+    file.seekg(0);
+    bool found= false;
+    for (int j = 0; j < records.size(); j++) {
+        if (records[j].name == sName) {
+            records[j] = records.back();
+            records.pop_back();
+            found = true;
+            break;
+        }
+    }
+    file.close();
+    file.open("bin.dat",  ios::out | ios::in | ios::binary | ios::trunc);
+    int len=records.size();
+    if(found){len--;}
+    for(int j=0;j<len;j++) {
+        file.write(reinterpret_cast<const char *>(&records[j]), sizeof(Struct));
+    }
+    if (!found) {
+        std::cout << "Запись с ключом " << sName << " не найдена." << std::endl;
+    } else {
+        std::cout << "Запись с ключом " << sName << " заменена." << std::endl;
+    }
+    file.close();
+    return;
+}
+
+void formByCode(int codeNum, ifstream &fb){
+    ofstream fn;
+    fb.open("bin.dat",ios::in | ios::binary);
+    fn.open("code.dat",ios::out | ios::binary);
+    Struct x;
+    fb.read((char *)&x,sizeof(Struct));
+    while(!fb.eof()){
+        if(x.code==codeNum){
+            fn.write((char *)&x,sizeof(Struct));
+        }
+        fb.read((char *)&x,sizeof(Struct));
+    }
+    cout << endl;
+    fb.close();
+    fn.close();
+}
+
+void changeName(string sName, int mas[],int count){
+    fstream fb;
+    Struct x;
+    vector<Struct> record;
+    fb.open("bin.dat",ios::in | ios::binary);
+    if(!fb.is_open()){cout<<"Ошибка чтения файла";return;}
+    while(!fb.eof()){
+        fb.read((char *)&x , sizeof(Struct));
+        for (int i = 0; i< count;i++) {
+            if(mas[i]==x.code){
+                strcpy(x.name,sName.c_str());
+            }
+        }
+        record.push_back(x);
+    }
+    fb.close();
+    fb.open("bin.dat",  ios::out | ios::in | ios::binary | ios::trunc);
+    int len=record.size();
+    for(int j=0;j<len-1;j++) {
+        fb.write(reinterpret_cast<const char *>(&record[j]), sizeof(Struct));
+    }
+    fb.close();
+}
+
+bool fileExist(ifstream &fin, ofstream &fout){
+    fin.open("text.txt",ios::out );
+    fout.open("bin.dat",ios::in | ios::binary);
+    if(!fin.good() ){
+        cout<<"Файл txt не открыт";
+        return false;
+    }
+    if(!fout.good() ){
+        cout<<"Файл dat не открыт";
+        return false;
+    }
+    fout.close();
+    fin.close();
+    return true;
 }
 
 int main() {
-    createFile("A.bin");
-    printFromFile("A.bin");
+    ofstream fout;
+    ifstream fin;
+    if(! fileExist(fin,fout)){
+        return 1;
+    }
+    createBinFile(fin,fout);
+    outBinFile(fin, "bin.dat");
+    existIndex(fin,1);
+    saveTxt(fin,fout);
+    formByCode(2,fin);
+    cout << "Записи по коду болезни из бинарного файла" <<endl;
+    outBinFile(fin,"code.dat");
+    deleteFromBin("Petrov");
+    int *num = new int[5];
+    num[0]=1;
+    changeName("Iv",num,5);
+    outBinFile(fin, "bin.dat");
+    return 0;
 }
