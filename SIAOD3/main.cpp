@@ -25,7 +25,7 @@ int main() {
     h.deleteItem(3);
     cout<<"Удаление ключа 3 из таблицы"<<endl;
     h.displayHash();
-    cout<<">>>>"<<(h.findItem(2));
+    cout<<endl<<(h.findItem(2))<<endl;
     cout << endl << "file:" << endl;
 
     ofstream fout;
@@ -40,7 +40,7 @@ int main() {
     deleteWithHashTable(*fileHashTable,33);
     fileHashTable->displayHash();
     outBinFile(fin,"bin.dat");
-    findByHash(*fileHashTable,22);
+    findByHash(*fileHashTable,1);
     for (int i=0;i<10;i++) {
         h.insertItem(i,i,"qwerty");
     }

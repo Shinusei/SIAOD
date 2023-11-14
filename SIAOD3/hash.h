@@ -3,8 +3,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 struct HashNode{
-    int key;
-    int value;
+    int number;
+    int code;
     char name[30];
 };
 
@@ -14,7 +14,7 @@ struct Hash
     list<HashNode> *table;
     Hash(int V);
     void insertItem(int x, int y, string name);
-    void deleteItem(int key);
+    void deleteItem(int number);
     int hashFunction(int x) {
         return (x % BUCKET);
     }
@@ -27,38 +27,35 @@ Hash::Hash(int b)
     this->BUCKET = b;
     table = new list<HashNode>[BUCKET];
 }
-void Hash::insertItem(int key, int value, string name)
+void Hash::insertItem(int number, int code, string name)
 {
-    int index = hashFunction(key);
+    int index = hashFunction(number);
     HashNode h;
-    h.key=key;
-    h.value=value;
+    h.number=number;
+    h.code=code;
     strcpy(h.name,name.c_str());
     table[index].push_back(h);
     reHash();
 }
 
-void Hash::deleteItem(int key)
+void Hash::deleteItem(int number)
 {
-    //Получаем хэш индекс по ключу
-    int index = hashFunction(key);
-    // find the key in (index)th list поиск элемента  хэш таблицы поключу
+    int index = hashFunction(number);
     list <HashNode> :: iterator i;
     for (i = table[index].begin();
          i != table[index].end(); i++) {
-        if (i->key == key)
+        if (i->number == number)
             break;
     }
-    // если ключ найден, то удаляем элемент хэш таблицы
     if (i != table[index].end())
         table[index].erase(i);
 }
-// Функция для отображения хэш таблицы
+
 void Hash::displayHash() {
     for (int i = 0; i < BUCKET; i++) {
         cout << i;
         for (auto x : table[i])
-            cout << " >>>> " << x.key<<" "<<x.value<<" "<<x.name;
+            cout << " >>>> " << x.number<<" "<<x.code<<" "<<x.name;
         cout << endl;
     }
 }
@@ -86,7 +83,7 @@ void Hash::reHash(){
         for(int i = 0; i < BUCKET; i++){
             if(!table2[i].empty()){
                 for(auto j : table2[i] ){
-                    int index= hashFunction(j.key);
+                    int index= hashFunction(j.number);
                     table[index].push_back(j);
                 }
             }
@@ -94,19 +91,19 @@ void Hash::reHash(){
     }
 }
 
-int Hash::findItem(int key) {
+int Hash::findItem(int number) {
 
     //Получаем хэш индекс по ключу
-    int index = hashFunction(key);
+    int index = hashFunction(number);
     list <HashNode> :: iterator i;
     for (i = table[index].begin();
          i != table[index].end(); i++) {
-        if (i->key == key) {
-            cout << key << " Элемент найден в таблице" << endl;
-            return i->value;
+        if (i->number == number) {
+            cout << number << " Элемент найден в таблице" << endl;
+            return i->code;
         }
     }
-    cout<<key<<" Элемент не найден в таблице"<<endl;
+    cout<<number<<" Элемент не найден в таблице"<<endl;
     return -1;
 }
 

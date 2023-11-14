@@ -17,8 +17,9 @@ void fillHashTable(Hash &table,ifstream &fb){
     }
     fb.close();
 }
-void deleteWithHashTable(Hash &table,int key){
-    int keyNum=table.findItem(key);
+void deleteWithHashTable(Hash &table,int number){
+    cout << endl;
+    int numberNum=table.findItem(number);
     fstream file;
     file.open("bin.dat",  ios::in | ios::binary);
     if(! file.is_open()){cout<<"Ошибка чтения файла";return;}
@@ -32,11 +33,9 @@ void deleteWithHashTable(Hash &table,int key){
     file.seekg(0);
     bool found= false;
     for (int j = 0; j < records.size(); j++) {
-        if (j==keyNum ) {
+        if (j==numberNum ) {
             records[j] = records.back();  // Копируем последний элемент вместо текущего
-            //delete &records.back();
             records.pop_back();  // Удаляем последний элемен
-            //records.erase(records.end());
             found = true;
             break;
         }
@@ -48,17 +47,14 @@ void deleteWithHashTable(Hash &table,int key){
     for(int j=0;j<len;j++) {
         file.write(reinterpret_cast<const char *>(&records[j]), sizeof(Struct));
     }
-    if (!found) {
-        //std::cout << "Запись с ключом " << key << " не найдена." << std::endl;
-    } else {
-        //std::cout << "Запись с ключом " << key << " заменена." << std::endl;
-    }
     file.close();
-    table.deleteItem(key);
+    table.deleteItem(number);
+    cout << endl;
     return;
 }
-void findByHash(Hash &table,int key){
-    int keyNum=table.findItem(key);
+void findByHash(Hash &table,int number){
+    cout << endl;
+    int numberNum=table.findItem(number);
     fstream file;
     file.open("bin.dat",  ios::in | ios::binary);
     if(! file.is_open()){cout<<"Ошибка чтения файла";return;}
@@ -66,10 +62,11 @@ void findByHash(Hash &table,int key){
     int n=0;
     while(!file.eof()) {
         file.read(reinterpret_cast<char*>(&currentStruct), sizeof(Struct));
-        if(n==keyNum){
+        if(n==numberNum){
             cout<<currentStruct.num<<" ";
             cout<<currentStruct.code<<" ";
             cout<<currentStruct.name<<" ";
+            cout << endl << endl;
             break;
         }n++;
     }
