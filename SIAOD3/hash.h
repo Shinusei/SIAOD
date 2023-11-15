@@ -1,90 +1,97 @@
 #ifndef HASH_H
 #define HASH_H
+
 #include <bits/stdc++.h>
+
 using namespace std;
-struct HashNode{
+struct HashNode {
     int number;
     int code;
     char name[30];
 };
 
-struct Hash
-{
-    int BUCKET;
-    list<HashNode> *table;
+struct Hash {
+    int HASHNUM;
+    list <HashNode> *hashArray;
+
     Hash(int V);
-    void insertItem(int x, int y, string name);
+
+    void addItem(int x, int y, string name);
+
     void deleteItem(int number);
+
     int hashFunction(int x) {
-        return (x % BUCKET);
+        return (x % HASHNUM);
     }
+
     int findItem(int);
-    void displayHash();
+
+    void printHash();
+
     void reHash();
 };
-Hash::Hash(int b)
-{
-    this->BUCKET = b;
-    table = new list<HashNode>[BUCKET];
+
+Hash::Hash(int b) {
+    this->HASHNUM = b;
+    hashArray = new list<HashNode>[HASHNUM];
 }
-void Hash::insertItem(int number, int code, string name)
-{
+
+void Hash::addItem(int number, int code, string name) {
     int index = hashFunction(number);
     HashNode h;
-    h.number=number;
-    h.code=code;
-    strcpy(h.name,name.c_str());
-    table[index].push_back(h);
+    h.number = number;
+    h.code = code;
+    strcpy(h.name, name.c_str());
+    hashArray[index].push_back(h);
     reHash();
 }
 
-void Hash::deleteItem(int number)
-{
+void Hash::deleteItem(int number) {
     int index = hashFunction(number);
-    list <HashNode> :: iterator i;
-    for (i = table[index].begin();
-         i != table[index].end(); i++) {
+    list<HashNode>::iterator i;
+    for (i = hashArray[index].begin();
+         i != hashArray[index].end(); i++) {
         if (i->number == number)
             break;
     }
-    if (i != table[index].end())
-        table[index].erase(i);
+    if (i != hashArray[index].end())
+        hashArray[index].erase(i);
 }
 
-void Hash::displayHash() {
-    for (int i = 0; i < BUCKET; i++) {
+void Hash::printHash() {
+    for (int i = 0; i < HASHNUM; i++) {
         cout << i;
-        for (auto x : table[i])
-            cout << " >>>> " << x.number<<" "<<x.code<<" "<<x.name;
+        for (auto x: hashArray[i])
+            cout << " >>>> " << x.number << " " << x.code << " " << x.name;
         cout << endl;
     }
 }
 
-void Hash::reHash(){
-    list<HashNode> *table2;
-    int n=0;
-    for(int i = 0; i < BUCKET; i++){
-        if(!table[i].empty()){
+void Hash::reHash() {
+    list <HashNode> *hashArray2;
+    int n = 0;
+    for (int i = 0; i < HASHNUM; i++) {
+        if (!hashArray[i].empty()) {
             n++;
         }
     }
-    if((n*1.0/(this->BUCKET))>=0.75){
-        table2 = new list<HashNode>[BUCKET*2];
-        for(int i = 0; i < BUCKET; i++){
-            if(!table[i].empty()){
-                for(auto j : table[i] ){
-                    table2[i].push_back(j);
+    if ((n * 1.0 / (this->HASHNUM)) >= 0.75) {
+        hashArray2 = new list<HashNode>[HASHNUM * 2];
+        for (int i = 0; i < HASHNUM; i++) {
+            if (!hashArray[i].empty()) {
+                for (auto j: hashArray[i]) {
+                    hashArray2[i].push_back(j);
                 }
             }
         }
-        BUCKET=BUCKET*2;
-        table->clear();
-        table = new list<HashNode>[BUCKET];
-        for(int i = 0; i < BUCKET; i++){
-            if(!table2[i].empty()){
-                for(auto j : table2[i] ){
-                    int index= hashFunction(j.number);
-                    table[index].push_back(j);
+        HASHNUM = HASHNUM * 2;
+        hashArray->clear();
+        hashArray = new list<HashNode>[HASHNUM];
+        for (int i = 0; i < HASHNUM; i++) {
+            if (!hashArray2[i].empty()) {
+                for (auto j: hashArray2[i]) {
+                    int index = hashFunction(j.number);
+                    hashArray[index].push_back(j);
                 }
             }
         }
@@ -92,18 +99,16 @@ void Hash::reHash(){
 }
 
 int Hash::findItem(int number) {
-
-    //Получаем хэш индекс по ключу
     int index = hashFunction(number);
-    list <HashNode> :: iterator i;
-    for (i = table[index].begin();
-         i != table[index].end(); i++) {
+    list<HashNode>::iterator i;
+    for (i = hashArray[index].begin();
+         i != hashArray[index].end(); i++) {
         if (i->number == number) {
             cout << number << " Элемент найден в таблице" << endl;
-            return i->code;
+            return i->number;
         }
     }
-    cout<<number<<" Элемент не найден в таблице"<<endl;
+    cout << number << " Элемент не найден в таблице" << endl;
     return -1;
 }
 

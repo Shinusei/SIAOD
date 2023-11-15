@@ -1,7 +1,7 @@
-1
-1
+0
+0
 Ivanov
-1
+5
 2
 Petrov
 2
@@ -9,4 +9,10 @@ Petrov
 Ivanov
 2
 2
+Petrov
+3
+3
+Ivanov
+4
+10
 Petrov
