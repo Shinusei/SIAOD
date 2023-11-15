@@ -75,6 +75,7 @@ void countNum(string fileName) {
     cout << endl << count-1;
     fin.close();
 }
+
 int getLast(string fileName) {
     if (!isFileExist(fileName)){
         return 0;
