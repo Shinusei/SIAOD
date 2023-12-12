@@ -7,7 +7,13 @@ struct Node {
     int height;
 };
 
-int max(int a, int b);
+Node* newNode(char key) {
+    Node* node = new Node();
+    node->key = key;
+    node->left = node->right = NULL;
+    node->height = 1;
+    return(node);
+}
 
 int height(Node *N) {
     if (N == NULL)
@@ -19,13 +25,6 @@ int max(int a, int b) {
     return (a > b)? a : b;
 }
 
-Node* newNode(char key) {
-    Node* node = new Node();
-    node->key = key;
-    node->left = node->right = NULL;
-    node->height = 1;
-    return(node);
-}
 
 Node *rightRotate(Node *y) {
     Node *x = y->left;
