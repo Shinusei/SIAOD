@@ -110,4 +110,4 @@ int main() {
     createFile("B.txt", "A.txt");
     cout << endl;
     printFromFile("B.txt");
-}
+}//change
